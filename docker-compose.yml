@@ -1,0 +1,59 @@
+version: '3'
+services:
+  server:
+    container_name: server
+    tty: true
+
+    build:
+        context: .
+        dockerfile: Dockerfile
+    depends_on:
+      - mongodb
+    env_file: .env
+    links:
+      - "mongodb:database"
+
+    volumes:
+      - ./server:/code
+      - ./server/public:/opt/services/public
+      - ./server/media:/opt/services/media
+    command: ['npm', 'run', 'dev']
+
+  nginx:
+    container_name: nginx
+    image: nginx:stable-alpine
+    env_file: .env
+    volumes:
+        - .:/code
+        - ./server/conf/nginx/:/etc/nginx/templates/
+        - ./server/public:/opt/services/public
+        - ./server/media:/opt/services/media
+    environment:
+      APP_PORT: ${APP_PORT}
+      SERVER_NAME: ${SERVER_NAME}
+      NGINX_PORT: ${NGINX_PORT}
+    ports:
+        - ${NGINX_PORT}:${NGINX_PORT}
+    restart: always
+    links:
+      - "server:server"
+    depends_on:
+      - server
+  
+  mongodb:
+    image : mongo
+    container_name: mongodb
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./server/database:/data/db
+    ports:
+      - 27017:27017
+    restart: unless-stopped
+
+# Names our volume
+volumes:
+  my-db:
+  media:
+  public:

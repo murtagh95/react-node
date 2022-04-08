@@ -1,0 +1,10 @@
+node_modules
+.idea
+dist
+database
+
+# Environments
+.env
+
+# Media
+media/img/*
