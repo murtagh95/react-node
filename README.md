@@ -27,7 +27,7 @@
 
 ## Usage
 
-* Open <http://127.0.0.1:808> and register your user.
+* Open <http://127.0.0.1:$(NGINX_PORT)> and register your user.
 
 ## Create a .env file and paste the following text
 
